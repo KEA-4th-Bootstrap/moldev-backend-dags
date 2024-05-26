@@ -1,4 +1,6 @@
 import mysql.connector
+import sys
+import subprocess
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pymongo'])
 import pymongo
 from pymongo import MongoClient
@@ -11,8 +13,6 @@ from airflow.operators.python_operator import PythonOperator
 from airflow.hooks.mysql_hook import MySqlHook
 from airflow.models import Variable
 
-import sys
-import subprocess
 
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'packagename'])
 import packagename
