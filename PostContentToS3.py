@@ -45,6 +45,21 @@ def save_moldev_ids():
     save_moldev_ids_to_s3(user_ids)
 
 def read_user_ids_from_s3():
+    import sys
+    import subprocess
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pymongo'])
+    import pymongo
+    from pymongo import MongoClient
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'boto3'])
+    import boto3
+    import os
+    from datetime import datetime, timedelta
+    from airflow import DAG
+    from airflow.operators.python_operator import PythonOperator
+    from airflow.hooks.mysql_hook import MySqlHook
+    from airflow.models import Variable
+    import csv
+    
     s3 = boto3.client('s3',
                       aws_access_key_id=Variable.get("AWS_ACCESS_KEY_ID"),
                       aws_secret_access_key=Variable.get("AWS_SECRET_ACCESS_KEY"),
@@ -115,7 +130,7 @@ default_args = {
     'email_on_failure': True,
     'email_on_retry': True,
     'retries': 1,
-    'retry_delay': timedelta(minutes=5),
+    'retry_delay': timedelta(minutes=2),
 }
 
 dag = DAG(
