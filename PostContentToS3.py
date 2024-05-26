@@ -13,10 +13,6 @@ from airflow.operators.python_operator import PythonOperator
 from airflow.hooks.mysql_hook import MySqlHook
 from airflow.models import Variable
 
-
-subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'packagename'])
-import packagename
-
 # MySQL에서 사용자 ID를 읽어오는 함수
 def read_moldev_ids_from_mysql():
     mysql_hook = MySqlHook(mysql_conn_id='user_mysql')
