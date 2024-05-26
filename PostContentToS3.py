@@ -121,7 +121,7 @@ dag = DAG(
     schedule_interval=timedelta(hours=1),
     start_date=datetime(2024, 5, 26),
     catchup=False,
-    tags=['example'],
+    tags=['post'],
 )
 
 with dag:
