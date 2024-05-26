@@ -1,13 +1,21 @@
 import mysql.connector
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pymongo'])
+import pymongo
 from pymongo import MongoClient
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'boto3'])
 import boto3
 import os
-import pandas as pd
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.hooks.mysql_hook import MySqlHook
 from airflow.models import Variable
+
+import sys
+import subprocess
+
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'packagename'])
+import packagename
 
 # MySQL에서 사용자 ID를 읽어오는 함수
 def read_moldev_ids_from_mysql():
