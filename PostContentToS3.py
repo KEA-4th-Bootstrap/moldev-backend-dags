@@ -14,6 +14,7 @@ from airflow.hooks.mysql_hook import MySqlHook
 from airflow.models import Variable
 import csv
 
+
 # MySQL에서 사용자 ID를 읽어오는 함수
 def read_moldev_ids_from_mysql():
     mysql_hook = MySqlHook(mysql_conn_id='user_mysql')
@@ -55,7 +56,7 @@ def read_user_ids_from_s3():
     local_file_name = '/tmp/moldev_ids.csv'
 
     # /tmp 디렉토리가 없는 경우 생성
-    os.makedirs('/tmp', exist_ok=True)
+    # os.makedirs('/tmp', exist_ok=True)
 
     # os.chmod(local_file_name, 777)
     # S3에서 파일 다운로드
@@ -101,20 +102,6 @@ def read_posts_from_mongo_and_save_to_s3(moldev_id):
 
 
 def process_posts_from_s3():
-    import sys
-    import subprocess
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pymongo'])
-    import pymongo
-    from pymongo import MongoClient
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'boto3'])
-    import boto3
-    import os
-    from datetime import datetime, timedelta
-    from airflow import DAG
-    from airflow.operators.python_operator import PythonOperator
-    from airflow.hooks.mysql_hook import MySqlHook
-    from airflow.models import Variable
-    import csv
     user_ids = read_user_ids_from_s3()
     for user_id in user_ids:
         read_posts_from_mongo_and_save_to_s3(user_id)
