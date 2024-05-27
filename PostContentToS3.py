@@ -10,6 +10,7 @@ import os
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
+from airflow.operators.slack_webhook_operator import SlackWebhookOperator
 from airflow.hooks.mysql_hook import MySqlHook
 from airflow.models import Variable
 import csv
@@ -146,4 +147,10 @@ with dag:
         python_callable=process_posts_from_s3,
     )
 
-    fetch_and_save_moldev_ids_task >> process_posts_from_s3_task
+    post_to_s3_slack = SlackWebhookOperator(
+        task_id='post_to_s3_slack',
+        http_conn_id='slack-webhook',  # Airflow connection id for Slack webhook
+        message="Moldev posts have been processed and saved to S3.",
+    )
+
+    fetch_and_save_moldev_ids_task >> process_posts_from_s3_task >> post_to_s3_slack
