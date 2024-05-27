@@ -88,7 +88,7 @@ def read_posts_from_mongo_and_save_to_s3(moldev_id):
     posts_str = ""
     for i in posts:
         posts_str += '\n#게시글 제목 : '+str(i['title'])
-        posts_str += '\n#게시글 카테고리 : '+ category_map.get(str(i['title']))
+        posts_str += '\n#게시글 카테고리 : '+ category_map.get(str(i['category']))
         posts_str += '\n게시글 작성일 : '+str(i['create_date'])
         posts_str += '\n\n게시글 주소 : '+str(i['front_url'])
         posts_str += '\n\n게시글 내용 : '+str(i['profile_content'])
