@@ -41,7 +41,7 @@ def save_moldev_ids_to_s3(moldev_ids):
     bucket_name = 'moldev-s3-bucket'
     
     s3.put_object(Bucket=bucket_name, Key=file_name, Body=moldev_csv)
-    
+
 def save_moldev_ids():
     user_ids = read_moldev_ids_from_mysql()
     save_moldev_ids_to_s3(user_ids)
@@ -72,6 +72,12 @@ def read_user_ids_from_s3():
 
 
 def read_posts_from_mongo_and_save_to_s3(moldev_id):
+    category_map = {'1': '대외활동',
+                    '2': '프로젝트',
+                    '3': '수상이력',
+                    '4': '트러블슈팅',
+                    '5': '자기소개'}
+
     moldev_id = moldev_id.lstrip()
     mongo_url = Variable.get("POST_MONGO_URL")
     client = MongoClient(mongo_url)
@@ -82,10 +88,11 @@ def read_posts_from_mongo_and_save_to_s3(moldev_id):
     posts_str = ""
     for i in posts:
         posts_str += '\n#게시글 제목 : '+str(i['title'])
+        posts_str += '\n#게시글 카테고리 : '+ category_map.get(str(i['title']))
         posts_str += '\n게시글 작성일 : '+str(i['create_date'])
         posts_str += '\n\n게시글 주소 : '+str(i['front_url'])
         posts_str += '\n\n게시글 내용 : '+str(i['profile_content'])
-        posts_str += '\n---\n\n'
+        posts_str += '\n\n---\n'
 
     with open('new.md', 'w', encoding='utf-8') as file:
         file.write(posts_str)
@@ -106,8 +113,6 @@ def process_posts_from_s3():
     user_ids = read_user_ids_from_s3()
     for user_id in user_ids:
         read_posts_from_mongo_and_save_to_s3(user_id)
-
-
 
 
 # Airflow DAG 정의
