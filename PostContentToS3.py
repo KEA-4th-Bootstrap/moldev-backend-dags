@@ -10,7 +10,7 @@ import os
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from airflow.operators.slack_webhook_operator import SlackWebhookOperator
+from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 from airflow.hooks.mysql_hook import MySqlHook
 from airflow.models import Variable
 import csv
