@@ -39,40 +39,41 @@ def save_moldev_ids_to_s3(moldev_ids):
                       region_name=Variable.get("AWS_DEFAULT_REGION")
                       )
     bucket_name = 'moldev-s3-bucket'
-    # s3.upload_file(file_name, bucket_name, 'member/moldev_ids.csv')
+    
     s3.put_object(Bucket=bucket_name, Key=file_name, Body=moldev_csv)
+    
 def save_moldev_ids():
     user_ids = read_moldev_ids_from_mysql()
     save_moldev_ids_to_s3(user_ids)
 
 def read_user_ids_from_s3():    
-    # s3 = boto3.client('s3',
-    #                   aws_access_key_id=Variable.get("AWS_ACCESS_KEY_ID"),
-    #                   aws_secret_access_key=Variable.get("AWS_SECRET_ACCESS_KEY"),
-    #                   region_name=Variable.get("AWS_DEFAULT_REGION")
-    #                   )
-    # bucket_name = 'moldev-s3-bucket'
-    # file_name = 'member/moldev_ids.csv'
-    # local_file_name = '/tmp/moldev_ids.csv'
+    s3 = boto3.client('s3',
+                      aws_access_key_id=Variable.get("AWS_ACCESS_KEY_ID"),
+                      aws_secret_access_key=Variable.get("AWS_SECRET_ACCESS_KEY"),
+                      region_name=Variable.get("AWS_DEFAULT_REGION")
+                      )
+    bucket_name = 'moldev-s3-bucket'
+    file_name = 'member/moldev_ids.csv'
+    local_file_name = '/tmp/moldev_ids.csv'
 
-    # # /tmp 디렉토리가 없는 경우 생성
-    # # os.makedirs('/tmp', exist_ok=True)
+    # /tmp 디렉토리가 없는 경우 생성
+    os.makedirs('/tmp', exist_ok=True)
 
-    # # os.chmod(local_file_name, 777)
-    # # S3에서 파일 다운로드
-    # s3.download_file(bucket_name, file_name, local_file_name)
-    # member_ids = []
-    # with open(local_file_name, mode='r') as file:
-    #     csv_reader = csv.reader(file)
-    #     for row in csv_reader:
-    #         member_ids = row
-    moldev_ids =   ['moldev','moldevId','moldev3','moldev17','moldev18','dodo','bokbok']
+    # os.chmod(local_file_name, 777)
+    # S3에서 파일 다운로드
+    s3.download_file(bucket_name, file_name, local_file_name)
+    moldev_ids = []
+    with open(local_file_name, mode='r') as file:
+        csv_reader = csv.reader(file)
+        for row in csv_reader:
+            moldev_ids = row
+            
     return moldev_ids
 
 
 def read_posts_from_mongo_and_save_to_s3(moldev_id):
     moldev_id = moldev_id.lstrip()
-    mongo_url = Variable.get("MONGO_URL")
+    mongo_url = Variable.get("POST_MONGO_URL")
     client = MongoClient(mongo_url)
     db = client['moldb']
     collection = db['post']
@@ -116,7 +117,7 @@ default_args = {
     'email_on_failure': True,
     'email_on_retry': True,
     'retries': 1,
-    'retry_delay': timedelta(minutes=2),
+    'retry_delay': timedelta(minutes=1),
 }
 
 dag = DAG(
