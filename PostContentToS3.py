@@ -149,7 +149,7 @@ with dag:
 
     post_to_s3_slack = SlackWebhookOperator(
         task_id='post_to_s3_slack',
-        http_conn_id='slack-webhook',  # Airflow connection id for Slack webhook
+        slck_webhook_conn_id='slack-webhook',  # Airflow connection id for Slack webhook
         message="Moldev posts have been processed and saved to S3.",
     )
 
