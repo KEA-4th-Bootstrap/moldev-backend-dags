@@ -1,4 +1,3 @@
-import mysql.connector
 import sys
 import subprocess
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pymongo'])
@@ -11,21 +10,24 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
-from airflow.hooks.mysql_hook import MySqlHook
 from airflow.models import Variable
 import csv
 
 
 # MySQL에서 사용자 ID를 읽어오는 함수
 def read_moldev_ids_from_mysql():
-    mysql_hook = MySqlHook(mysql_conn_id='user_mysql')
-    conn = mysql_hook.get_conn()
-    cursor = conn.cursor()
-    cursor.execute("SELECT moldev_id FROM member")
-    moldev_ids = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return [user_id[0] for user_id in moldev_ids]
+    mongo_url = Variable.get("POST_MONGO_URL")
+    client = MongoClient(mongo_url)
+    db = client['moldb']
+    collection = db['post']
+
+    # 현재 시간과 24시간 이전 시간 계산
+    current_time = datetime.utcnow()
+    time_threshold = current_time - timedelta(hours=3)
+
+    recent_posts = collection.find({'last_modified_date': {'$gte': time_threshold}})
+    
+    return [recent_post['moldev_id'] for recent_post in recent_posts]
 
 
 def save_moldev_ids_to_s3(moldev_ids):
@@ -130,7 +132,7 @@ dag = DAG(
     'post_to_s3',
     default_args=default_args,
     description='사용자의 게시글 정보들을 s3로 옮깁니다.',
-    schedule_interval=timedelta(hours=1),
+    schedule_interval=timedelta(hours=1.5),
     start_date=datetime(2024, 5, 26),
     catchup=False,
     tags=['post'],
