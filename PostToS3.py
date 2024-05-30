@@ -26,7 +26,7 @@ def read_moldev_ids_from_mysql():
 
     recent_posts = collection.find({'last_modified_date': {'$gte': time_threshold}})
     
-    return [recent_post['moldev_id'] for recent_post in recent_posts]
+    return list(set([recent_post['moldev_id'] for recent_post in recent_posts]))
 
 
 def save_moldev_ids_to_s3(moldev_ids):
