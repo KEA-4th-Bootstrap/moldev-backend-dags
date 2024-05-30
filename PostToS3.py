@@ -123,12 +123,12 @@ default_args = {
     'email': ['ojy09291@naver.com'],
     'email_on_failure': True,
     'email_on_retry': True,
-    'retries': 0,
-    'retry_delay': timedelta(minutes=1),
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
 }
 
 dag = DAG(
-    'change_post_to_s3',
+    'change_or_new_post_to_s3',
     default_args=default_args,
     description='사용자의 게시글 정보들을 s3로 옮깁니다.',
     schedule_interval=timedelta(hours=1.5),
@@ -138,12 +138,12 @@ dag = DAG(
 )
 
 with dag:
-    fetch_and_save_moldev_ids_task = PythonOperator(
+    save_moldev_ids_task = PythonOperator(
         task_id='save_moldev_ids',
         python_callable=save_moldev_ids,
     )
 
-    process_posts_from_s3_task = PythonOperator(
+    process_posts_to_s3 = PythonOperator(
         task_id='process_posts_from_s3',
         python_callable=process_posts_from_s3,
     )
@@ -154,4 +154,4 @@ with dag:
         message="Moldev posts have been processed and saved to S3.",
     )
 
-    fetch_and_save_moldev_ids_task >> process_posts_from_s3_task >> post_to_s3_slack
+    save_moldev_ids_task >> process_posts_to_s3 >> post_to_s3_slack
