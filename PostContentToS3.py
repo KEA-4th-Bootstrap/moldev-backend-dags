@@ -14,7 +14,6 @@ from airflow.models import Variable
 import csv
 
 
-# MySQL에서 사용자 ID를 읽어오는 함수
 def read_moldev_ids_from_mysql():
     mongo_url = Variable.get("POST_MONGO_URL")
     client = MongoClient(mongo_url)
@@ -132,11 +131,7 @@ dag = DAG(
     'post_to_s3',
     default_args=default_args,
     description='사용자의 게시글 정보들을 s3로 옮깁니다.',
-<<<<<<< HEAD
     schedule_interval=timedelta(hours=1.5),
-=======
-    schedule_interval=timedelta(hours=8),
->>>>>>> f2e4b34f169f0f30b297a103081088f982d25db1
     start_date=datetime(2024, 5, 26),
     catchup=False,
     tags=['post'],
