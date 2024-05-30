@@ -128,7 +128,7 @@ default_args = {
 }
 
 dag = DAG(
-    'post_to_s3',
+    'change_post_to_s3',
     default_args=default_args,
     description='사용자의 게시글 정보들을 s3로 옮깁니다.',
     schedule_interval=timedelta(hours=1.5),
