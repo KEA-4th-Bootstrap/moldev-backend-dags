@@ -22,7 +22,7 @@ def read_moldev_ids_from_mysql():
 
     # 현재 시간과 24시간 이전 시간 계산
     current_time = datetime.utcnow()
-    time_threshold = current_time - timedelta(hours=3)
+    time_threshold = current_time - timedelta(hours=2.5)
 
     recent_posts = collection.find({'last_modified_date': {'$gte': time_threshold}})
     
