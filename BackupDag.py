@@ -2,6 +2,7 @@ from airflow import DAG
 from airflow.providers.ssh.operators.ssh import SSHOperator
 from airflow.utils.dates import days_ago
 from datetime import datetime, timedelta
+from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 from airflow.models import Variable
 
 default_args = {
@@ -47,5 +48,10 @@ with DAG(
         ),
     )
     
+    notificate_slack = SlackWebhookOperator(
+        task_id='notificate_slack',
+        slack_webhook_conn_id='slack-webhook',  # Airflow connection id for Slack web    hook
+        message="All database dump files are created",
+    )
 
-    [create_member_dump, create_post_dump, create_report_dump]
+    [create_member_dump, create_post_dump, create_report_dump] >> notificate_slack
